@@ -565,7 +565,32 @@ int sumOfSums(int table[],int length){
     return sum;
 }
 
-string parseVarString(string a){
+string parseVarStringCon(string a){
+    stringstream output;
+    int value;
+    string temp,symbol,retVal;
+    temp = reverse(a);
+    for(int i = 0; i < temp.length();i++){
+        value = temp[i] - '0';
+        switch(i){
+            case 0: symbol = "a";break;
+            case 1: symbol = "b";break;
+            case 2: symbol = "c";break;
+            case 3: symbol = "d";break;
+            case 4: symbol = "e";break;
+            default: symbol = "x";break;
+        }
+        if(value == 0){
+            output << symbol << "+";
+        }else if(value == 1){
+            output<< "non(" << symbol << ")"<< "+";
+        }
+    }
+    retVal = output.str();
+    return retVal.substr(0,retVal.length()-1);
+}
+
+string parseVarStringDis(string a){
     stringstream output;
     int value;
     string temp,symbol;
@@ -594,11 +619,20 @@ string parseOutput(string func,int numVar,int form){
     string temp = func.substr(0,func.length()-1);
     stringstream output;
     
-    for(int i = 0;i<lengthOfFunc;i++){
-        output << parseVarString(temp.substr(i*(numVar+1),numVar));
-        if(i<lengthOfFunc-1){
-            output << " + ";
-        }
+    if(form == 1){
+        for(int i = 0;i<lengthOfFunc;i++){
+            output << parseVarStringDis(temp.substr(i*(numVar+1),numVar));
+            if(i<lengthOfFunc-1){
+                output << " + ";
+            }
+        }   
+    }else{
+        for(int i = 0;i<lengthOfFunc;i++){
+            output << parseVarStringCon(temp.substr(i*(numVar+1),numVar));
+            if(i<lengthOfFunc-1){
+                output << " * ";
+            }
+        }   
     }
 
     return output.str();
@@ -699,7 +733,13 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
             tableOfCoverage[i][j] = findCoverage(j,i,index,implicantTable,columns);
         }
     }
-
+    for( int i = 0;i < rows;i++){
+        for (int j = 0 ; j < columns;j++){
+            if(tableOfCoverage[i][j]==1){
+                sumOfCoverage[j]=sumOfCoverage[j]+1;
+            }
+        }
+    }
 
     do{
         k++;
@@ -716,6 +756,11 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
 
         // cout << endl;
         // cout << "SUM";
+        // for (int j = 0 ; j < columns;j++){
+        //     cout << "| " << sumOfCoverage[j] << " | ";
+        // }
+        // cout << endl;cout <<endl;
+
         minimum = 0;
         for(int i = 0; i < columns;i++){
              if( minimum == 0 && sumOfCoverage[i] > 0){
@@ -765,7 +810,7 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
         // cout << sums <<endl;
         // cout <<endl;
     }while(sums != 0);
-    //cout << minimizedFunc.str() << endl;
+    // cout << minimizedFunc.str() << endl;
     string solvedFunc;
     if(form==1){
         solvedFunc = parseOutput(minimizedFunc.str(),numVar,1);  
@@ -792,13 +837,23 @@ void solverKMap(int numVar,int form){
     cout << funcToString(numVar,mapa,form) << endl;  
     printKMap(numVar,mapa,form);
 
-    implicants = createImplicants(mapa,numVar,form);
-    index = implicantIndex(mapa,numVar,form);
+    implicants = createImplicants(mapa,numVar,1);
+    index = implicantIndex(mapa,numVar,1);
+    // cout << "Implikanty: " << implicants << endl;
+    // cout << "Indexy: " << index << endl;
+    string outputFunc = QuineMcCluskey(implicants,index,numVar,1);
+    cout << "\r\n" << "```" << "\r\n" << endl;
+    cout << "Disjunction form of function is: f = " << outputFunc << "\r\n\r\n" << endl;
+
+    implicants = createImplicants(mapa,numVar,0);
+    index = implicantIndex(mapa,numVar,0);
     //cout << "Implikanty: " << implicants << endl;
     //cout << "Indexy: " << index << endl;
-    string outputFunc = QuineMcCluskey(implicants,index,numVar,form);
-    cout << "\r\n" << "```" << "\r\n" << endl;
-    cout << "Function is: " << outputFunc << "\r\n\r\n" << endl;
+    outputFunc = QuineMcCluskey(implicants,index,numVar,1);
+    // cout << "Conjunction form of function is: non(f) = " << outputFunc << " -> "; 
+    outputFunc = QuineMcCluskey(implicants,index,numVar,0);
+    // cout << " f = " << outputFunc  << "\r\n\r\n" << endl;
+    cout << "Conjunction form of function is: f = " << outputFunc << "\r\n\r\n" << endl;    
 }
 
 int main(int argc, char* argv[]) {
@@ -842,6 +897,9 @@ int main(int argc, char* argv[]) {
         case 18: solverKMap(3,1);break;
         case 19: solverKMap(4,1);break;
         case 20: solverKMap(5,1);break;
+        case 21: solverKMap(3,0);break;
+        case 22: solverKMap(4,0);break;
+        case 23: solverKMap(5,0);break;
         default: break;
     }
 
