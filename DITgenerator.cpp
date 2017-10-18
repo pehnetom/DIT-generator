@@ -12,20 +12,19 @@
 using namespace std;
 
 string fillInZeros(string a,int numVar){
+    stringstream streamS;
     if((a.length() == 4 && numVar==5) || (a.length() == 3 && numVar==4) || (a.length() == 2 && numVar==3)){
-        stream << "0" << a;
-        a = stream.str();
+        streamS << "0" << a;
     }else if((a.length() == 3 && numVar==5) || (a.length() == 2 && numVar==4) || (a.length() == 1 && numVar==3)){
-        stream << "00" << a;
-        a = stream.str();
+        streamS << "00" << a;
     }else if((a.length() == 2 && numVar==5) || (a.length() == 1 && numVar==4)){
-        stream << "000" << a;
-        a = stream.str();
+        streamS << "000" << a;
     }else if((a.length() == 1 && numVar==5)){
-        stream << "0000" << a;
-        a = stream.str();
+        streamS << "0000" << a;
+        
     }
 
+    a = streamS.str();
     return a;
 }
 
