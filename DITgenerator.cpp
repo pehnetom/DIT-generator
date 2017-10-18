@@ -597,7 +597,7 @@ string parseOutput(string func,int numVar,int form){
     for(int i = 0;i<lengthOfFunc;i++){
         output << parseVarString(temp.substr(i*(numVar+1),numVar));
         if(i<lengthOfFunc-1){
-            output << "+";
+            output << " + ";
         }
     }
 
@@ -786,6 +786,8 @@ void solverKMap(int numVar,int form){
     }else if(numVar == 4){
       mapa = new int [16];
     }
+
+    cout << "\r\n" << "```" << endl;
     mapa = generateMap(numVar,mapa);
     cout << funcToString(numVar,mapa,form) << endl;  
     printKMap(numVar,mapa,form);
@@ -795,7 +797,8 @@ void solverKMap(int numVar,int form){
     //cout << "Implikanty: " << implicants << endl;
     //cout << "Indexy: " << index << endl;
     string outputFunc = QuineMcCluskey(implicants,index,numVar,form);
-    cout << "Function is: " << outputFunc << endl;
+    cout << "\r\n" << "```" << "\r\n" << endl;
+    cout << "Function is: " << outputFunc << "\r\n\r\n" << endl;
 }
 
 int main(int argc, char* argv[]) {
