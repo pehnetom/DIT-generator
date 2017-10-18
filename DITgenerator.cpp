@@ -821,7 +821,7 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
     return solvedFunc;
 }
 
-void solverKMap(int numVar,int form){
+void solverKMap(int numVar,int form,int scenario){
     int * mapa;
     string implicants;
     string index;
@@ -832,28 +832,49 @@ void solverKMap(int numVar,int form){
       mapa = new int [16];
     }
 
-    cout << "\r\n" << "```" << endl;
     mapa = generateMap(numVar,mapa);
-    cout << funcToString(numVar,mapa,form) << endl;  
-    printKMap(numVar,mapa,form);
 
     implicants = createImplicants(mapa,numVar,1);
     index = implicantIndex(mapa,numVar,1);
-    // cout << "Implikanty: " << implicants << endl;
-    // cout << "Indexy: " << index << endl;
-    string outputFunc = QuineMcCluskey(implicants,index,numVar,1);
-    cout << "\r\n" << "```" << "\r\n" << endl;
-    cout << "Disjunction form of function is: f = " << outputFunc << "\r\n\r\n" << endl;
+    string outputFuncDis = QuineMcCluskey(implicants,index,numVar,1);
 
     implicants = createImplicants(mapa,numVar,0);
     index = implicantIndex(mapa,numVar,0);
-    //cout << "Implikanty: " << implicants << endl;
-    //cout << "Indexy: " << index << endl;
-    outputFunc = QuineMcCluskey(implicants,index,numVar,1);
-    // cout << "Conjunction form of function is: non(f) = " << outputFunc << " -> "; 
-    outputFunc = QuineMcCluskey(implicants,index,numVar,0);
-    // cout << " f = " << outputFunc  << "\r\n\r\n" << endl;
-    cout << "Conjunction form of function is: f = " << outputFunc << "\r\n\r\n" << endl;    
+    //string outputFuncConj = QuineMcCluskey(implicants,index,numVar,1); 
+    string outputFuncCon = QuineMcCluskey(implicants,index,numVar,0);
+    
+    switch(scenario){
+        case 2: 
+            cout << "\r\n" << "```" << endl;
+            cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
+            cout << funcToString(numVar,mapa,form) << endl;
+            cout << "\r\n" << "```" << "\r\n" << endl;
+            cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl; 
+            break;
+        case 3:
+            cout << "\r\n" << "```" << endl;
+            // cout << funcToString(numVar,mapa,form) << endl;
+            cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
+            cout << "\r\n" << "```" << "\r\n" << endl;
+            cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl;
+            break;
+        case 4:
+            cout << "\r\n" << "```" << endl;
+            // cout << funcToString(numVar,mapa,form) << endl;
+            cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl; 
+            cout << "\r\n" << "```" << "\r\n" << endl;
+            cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
+            break;
+        default:
+            cout << "\r\n" << "```" << endl;
+            cout << funcToString(numVar,mapa,form) << endl;
+            printKMap(numVar,mapa,form);
+            cout << "\r\n" << "```" << "\r\n" << endl;
+            cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
+            cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl;   
+            break;
+    }
+    
 }
 
 int main(int argc, char* argv[]) {
@@ -893,13 +914,19 @@ int main(int argc, char* argv[]) {
         case 14: multiplication(number,8);break;
         case 15: multiplication(number,16);break;
         case 16: printOnlyDef(file);break;
-        case 17: solverKMap(number,1);break;
-        case 18: solverKMap(3,1);break;
-        case 19: solverKMap(4,1);break;
-        case 20: solverKMap(5,1);break;
-        case 21: solverKMap(3,0);break;
-        case 22: solverKMap(4,0);break;
-        case 23: solverKMap(5,0);break;
+        case 17: solverKMap(number,1,1);break;
+        case 18: solverKMap(3,1,1);break;
+        case 19: solverKMap(4,1,1);break;
+        case 20: solverKMap(5,1,1);break;
+        case 21: solverKMap(3,1,2);break;
+        case 22: solverKMap(4,1,2);break;
+        case 23: solverKMap(5,1,2);break;
+        case 24: solverKMap(3,1,3);break;
+        case 25: solverKMap(4,1,3);break;
+        case 26: solverKMap(5,1,3);break;
+        case 27: solverKMap(3,1,4);break;
+        case 28: solverKMap(4,1,4);break;
+        case 29: solverKMap(5,1,4);break;
         default: break;
     }
 
