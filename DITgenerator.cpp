@@ -90,7 +90,6 @@ string convertNum(int a,int b){
 void decToBase(int number,int base){
     cout << "## Prevedte z desítkové soustavy do " <<returnBase(base) << " soustavy." << endl;
     cout << endl;
-    srand (time(NULL));
     int randNum;
     for(int i = 0;i < number;i++){
         randNum = rand() % highLimit(base) + 30;
@@ -102,7 +101,6 @@ void decToBase(int number,int base){
 void baseToDec(int number,int base){
     cout << "## Prevedte z " << returnBase(base) << " soustavy do desitkove soustavy." << endl;
     cout << endl;
-    srand (time(NULL));
     int randNum;
     for(int i = 0;i < number;i++){
         randNum = rand() % highLimit(base) + 30;
@@ -114,7 +112,6 @@ void baseToDec(int number,int base){
 void addition(int number,int base){
     cout << "## Sectete dve cisla z " << returnBase(base) <<" soustavy." << endl;
     cout << endl;
-    srand (time(NULL));
     int randNum_1;
     int randNum_2;
     for(int i = 0; i < number ;i++){
@@ -128,7 +125,6 @@ void addition(int number,int base){
 void subtraction(int number,int base){
     cout << "## Odectete dvojici čisel z " << base <<" soustavy." << endl;
     cout << endl;
-    srand (time(NULL));
     int randNum_1;
     int randNum_2;
     for(int i = 0; i < number ;i++){
@@ -141,7 +137,6 @@ void subtraction(int number,int base){
 
 void multiplication(int number,int base){
     cout << "## Vynasobte dvojici cisel z " << base <<" soustavy." << endl;
-    srand (time(NULL));
     int randNum_1;
     int randNum_2;
     for(int i = 0; i < number ;i++){
@@ -318,30 +313,122 @@ string funcToString(int numVar,int mapa[],int form){
     return temp.substr(0,temp.length()-1);
 }
 
-int* generateMap(int numVar,int mapa[]){
+string generateImplicants(int numVar){
+    int maxRand = 0;
+    if (numVar == 5) {
+        maxRand = 39;
+    }else if(numVar == 4){
+        maxRand = 17;
+    }else{
+        maxRand = 6;
+    }
+    int randNum = rand() % maxRand + 0;
+    // cout << randNum << endl;
+    // cout << maxRand << endl;
+    // cout << numVar << endl;
+    string retVal="xxxxxxxx";
+    switch(randNum){
+        case  0: retVal = "00010504";break;
+        case  1: retVal = "03020607";break;
+        case  2: retVal = "01030507";break;
+        case  3: retVal = "00020406";break;
+        case  4: retVal = "00010302";break;
+        case  5: retVal = "04050706";break;// 8
+        case  6: retVal = "00010809";break;
+        case  7: retVal = "05071315";break;
+        case  8: retVal = "03021110";break;
+        case  9: retVal = "06071415";break;
+        case 10: retVal = "04051312";break;
+        case 11: retVal = "13150911";break;
+        case 12: retVal = "04061214";break;
+        case 13: retVal = "00010504";break;
+        case 14: retVal = "12081410";break;
+        case 15: retVal = "11101415";break;
+        case 16: retVal = "08091312";break;//16
+        case 17: retVal = "12132829";break;
+        case 18: retVal = "20212829";break;
+        case 19: retVal = "14153031";break;
+        case 20: retVal = "11102726";break;
+        case 21: retVal = "08092425";break;
+        case 22: retVal = "19182223";break;
+        case 23: retVal = "27264041";break;
+        case 24: retVal = "16172021";break;
+        case 25: retVal = "24252928";break;
+        case 26: retVal = "31302223";break;
+        case 27: retVal = "27261918";break;
+        case 29: retVal = "00082416";break;
+        case 30: retVal = "11271531";break;
+        case 31: retVal = "00010504";break;
+        case 32: retVal = "09251329";break;
+        case 33: retVal = "08241228";break;
+        case 34: retVal = "02061822";break;
+        case 35: retVal = "03071923";break;
+        case 36: retVal = "01051721";break;
+        case 37: retVal = "00041620";break;
+        case 38: retVal = "16172425";break;//32
+        default: retVal = "00010504";break;
+    }
+
+    return retVal;
+}
+
+const int numOfDigits = 2;
+
+int* generateMap(int numVar,int mapa[], int method){
   int maxNumOfImp = 0,numOfImp,maxVar,k=0,imp;
+  string implicants;
   if (numVar == 5){
     maxNumOfImp = 20;
     maxVar = 32;
   }else if(numVar == 4){
-    maxNumOfImp = 10;
+    maxNumOfImp = 8;
     maxVar = 16;
   }else{
     numVar = 3;
     maxNumOfImp = 5;
     maxVar = 8;
   }
-
-  srand (time(NULL));
   numOfImp = rand() % (maxNumOfImp-3) + 3;
-  while(k<numOfImp){
-    imp = rand() % maxVar + 0;
-    if(mapa[imp]==0){
-      mapa[imp] = 1;
-      k++;
+  
+  if( method == 1){
+    if (numVar == 5){
+        maxNumOfImp = 10;
+    }else if(numVar == 4){
+        maxNumOfImp = 5;
+    }else{
+        maxNumOfImp = 2; 
+    }
+    while(k<numOfImp){
+        implicants = generateImplicants(numVar);
+        // cout << implicants << endl;
+        for(int i=0;i < (implicants.length()/2);i++){
+            // cout << i << " " << i*(numOfDigits) << " " << implicants.length() << " " << implicants.substr(i*(numOfDigits),numOfDigits) << endl;
+            try{
+                imp = stoi(implicants.substr(i*(numOfDigits),numOfDigits));
+                // cout << imp <<endl;;
+                // imp = 1;
+            }
+            catch(...){
+                cout << "Error in function generateMap, Method 1, conversion from string to int..." << endl;
+            }
+            // cout << imp <<  " " << implicants.substr(i*(numOfDigits),numOfDigits) << endl;
+            if(mapa[imp]==0){
+                mapa[imp] = 1;
+                
+            }
+        }
+        k++;
     }
   }
-
+  else  {
+    while(k<numOfImp){
+        imp = rand() % maxVar + 0;
+        if(mapa[imp]==0){
+            mapa[imp] = 1;
+            k++;
+        }
+    }
+  }
   return mapa;
 }
 
@@ -424,7 +511,11 @@ string eradicateDuplicates(string index,string implicants,int numOfImplicants,in
             remains_index = remains_index.substr(e+1,index.length()-1);
             //cout << remains_index <<endl;
         }
+        try{
         c = stoi(result_impl);
+        }catch(...){
+            cout << "Erorr on line 515 function eradicateDuplicates. string: " << result_impl << implicants << index << endl;
+        }
         //cout << c << "->" << result_impl << endl;
         for(int i=0;i<numOfImplicants;i++){
             //cout << c << "==" << implicantsInt[i] << "?  ";
@@ -503,7 +594,11 @@ int * findPoints(int numOfImplicants,int table[],string index){
             result = remains.substr(0,c);
             remains =remains.substr(c+1,index.length()-1);
         }
-        table[i] = stoi(result);
+        try{
+            table[i] = stoi(result);
+        } catch(...){
+            cout << "Error on line 598, in function findPoints. String:" << result << " " << remains << endl;
+        }
     }
 
     return table;
@@ -649,6 +744,7 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
     string a,b;
     int basicNumberOfImplicants = countImplicants(implicants);
     int * implicantTable = new int [basicNumberOfImplicants];
+    // cout << index << " "  << implicants << endl;
     implicantTable = findPoints(basicNumberOfImplicants,implicantTable,index);
     while(k<100){
         newImplicants.str("");
@@ -823,6 +919,7 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
 
 void solverKMap(int numVar,int form,int scenario){
     int * mapa;
+    int mapType;
     string implicants;
     string index;
     mapa = new int [8];
@@ -832,7 +929,14 @@ void solverKMap(int numVar,int form,int scenario){
       mapa = new int [16];
     }
 
-    mapa = generateMap(numVar,mapa);
+    if( scenario == 5){
+        scenario = 1;
+        mapType = 1;
+    }else{
+        mapType = 0;
+    }
+
+    mapa = generateMap(numVar,mapa,mapType);
 
     implicants = createImplicants(mapa,numVar,1);
     index = implicantIndex(mapa,numVar,1);
@@ -881,6 +985,7 @@ int main(int argc, char* argv[]) {
     int prikaz = 0;
     int number = 1;
     string file;
+    srand (time(NULL));
 
     if (argc > 1){
         prikaz = atol(argv[1]);
@@ -927,6 +1032,9 @@ int main(int argc, char* argv[]) {
         case 27: solverKMap(3,1,4);break;
         case 28: solverKMap(4,1,4);break;
         case 29: solverKMap(5,1,4);break;
+        case 31: solverKMap(3,1,5);break;
+        case 32: solverKMap(4,1,5);break;
+        case 33: solverKMap(5,1,5);break;
         default: break;
     }
 
