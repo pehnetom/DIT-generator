@@ -917,68 +917,101 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
     return solvedFunc;
 }
 
-void solverKMap(int numVar,int form,int scenario){
-    int * mapa;
-    int mapType;
-    string implicants;
-    string index;
-    mapa = new int [8];
-    if (numVar == 5){
-      mapa = new int [32];
-    }else if(numVar == 4){
-      mapa = new int [16];
-    }
-
-    if( scenario == 5){
-        scenario = 1;
-        mapType = 1;
-    }else{
-        mapType = 0;
-    }
-
-    mapa = generateMap(numVar,mapa,mapType);
-
-    implicants = createImplicants(mapa,numVar,1);
-    index = implicantIndex(mapa,numVar,1);
-    string outputFuncDis = QuineMcCluskey(implicants,index,numVar,1);
-
-    implicants = createImplicants(mapa,numVar,0);
-    index = implicantIndex(mapa,numVar,0);
-    //string outputFuncConj = QuineMcCluskey(implicants,index,numVar,1); 
-    string outputFuncCon = QuineMcCluskey(implicants,index,numVar,0);
+void solverKMap(int numVar,int form,int scenario,int repetition){
     
-    switch(scenario){
-        case 2: 
-            cout << "\r\n" << "```" << endl;
-            cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
-            cout << funcToString(numVar,mapa,form) << endl;
-            cout << "\r\n" << "```" << "\r\n" << endl;
-            cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl; 
-            break;
-        case 3:
-            cout << "\r\n" << "```" << endl;
-            // cout << funcToString(numVar,mapa,form) << endl;
-            cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
-            cout << "\r\n" << "```" << "\r\n" << endl;
-            cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl;
-            break;
-        case 4:
-            cout << "\r\n" << "```" << endl;
-            // cout << funcToString(numVar,mapa,form) << endl;
-            cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl; 
-            cout << "\r\n" << "```" << "\r\n" << endl;
-            cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
-            break;
-        default:
-            cout << "\r\n" << "```" << endl;
-            cout << funcToString(numVar,mapa,form) << endl;
-            printKMap(numVar,mapa,form);
-            cout << "\r\n" << "```" << "\r\n" << endl;
-            cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
-            cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl;   
-            break;
+        int * mapa;
+        int mapType;
+        string implicants;
+        string index;
+        mapa = new int [8];
+        if (numVar == 5){
+        mapa = new int [32];
+        }else if(numVar == 4){
+        mapa = new int [16];
+        }
+
+        if( scenario == 5){
+            scenario = 1;
+            mapType = 1;
+        }else{
+            mapType = 0;
+        }
+
+        for(int i = 0; i < pow (2, numVar); i++){
+            mapa[i] = 0;
+        }
+
+        mapa = generateMap(numVar,mapa,mapType);
+        // for(int i = 0; i < pow (2, numVar); i++){
+        //     cout << mapa[i];
+        // }
+        int countOfOnes = 0,notMinimizing = 0;
+        for(int i = 0; i < pow (2, numVar); i++){
+            if(mapa[i]==1){
+                countOfOnes = countOfOnes + 1;
+            }
+        }
+        // cout << countOfOnes << " from " << pow(2,numVar) << endl;
+        if(countOfOnes == pow(2,numVar)){
+            notMinimizing = 1;
+        }
+        // cout << notMinimizing << endl;
+
+        implicants = createImplicants(mapa,numVar,1);
+        index = implicantIndex(mapa,numVar,1);
+        string outputFuncDis;
+        if(notMinimizing == 0){
+            outputFuncDis = QuineMcCluskey(implicants,index,numVar,1);
+        }else{
+            outputFuncDis = "1";
+        }
+
+        implicants = createImplicants(mapa,numVar,0);
+        index = implicantIndex(mapa,numVar,0);
+        //string outputFuncConj = QuineMcCluskey(implicants,index,numVar,1); 
+        string outputFuncCon;
+        if(notMinimizing == 0){
+            outputFuncCon = QuineMcCluskey(implicants,index,numVar,0);
+        }else{
+            outputFuncCon = "1";
+        }
+        switch(scenario){
+            case 2: 
+                cout << "\r\n" << "```" << endl;
+                cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
+                cout << funcToString(numVar,mapa,form) << endl;
+                cout << "\r\n" << "```" << "\r\n" << endl;
+                cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl; 
+                break;
+            case 3:
+                cout << "\r\n" << "```" << endl;
+                // cout << funcToString(numVar,mapa,form) << endl;
+                cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
+                cout << "\r\n" << "```" << "\r\n" << endl;
+                cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl;
+                break;
+            case 4:
+                cout << "\r\n" << "```" << endl;
+                // cout << funcToString(numVar,mapa,form) << endl;
+                cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl; 
+                cout << "\r\n" << "```" << "\r\n" << endl;
+                cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
+                break;
+            default:
+                cout << "\r\n" << "```" << endl;
+                cout << funcToString(numVar,mapa,form) << endl;
+                printKMap(numVar,mapa,form);
+                cout << "\r\n" << "```" << "\r\n" << endl;
+                cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
+                cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl;   
+                break;
+        }
+}
+
+void solverOfMaps(int numVar,int form,int scenario,int repetition){
+    for(int i = 0;i<repetition;i++){
+        solverKMap(numVar,form,scenario,repetition);
     }
-    
 }
 
 int main(int argc, char* argv[]) {
@@ -1019,22 +1052,22 @@ int main(int argc, char* argv[]) {
         case 14: multiplication(number,8);break;
         case 15: multiplication(number,16);break;
         case 16: printOnlyDef(file);break;
-        case 17: solverKMap(number,1,1);break;
-        case 18: solverKMap(3,1,1);break;
-        case 19: solverKMap(4,1,1);break;
-        case 20: solverKMap(5,1,1);break;
-        case 21: solverKMap(3,1,2);break;
-        case 22: solverKMap(4,1,2);break;
-        case 23: solverKMap(5,1,2);break;
-        case 24: solverKMap(3,1,3);break;
-        case 25: solverKMap(4,1,3);break;
-        case 26: solverKMap(5,1,3);break;
-        case 27: solverKMap(3,1,4);break;
-        case 28: solverKMap(4,1,4);break;
-        case 29: solverKMap(5,1,4);break;
-        case 31: solverKMap(3,1,5);break;
-        case 32: solverKMap(4,1,5);break;
-        case 33: solverKMap(5,1,5);break;
+        case 17: solverOfMaps(number,1,1,1);break;
+        case 18: solverOfMaps(3,1,1,number);break;
+        case 19: solverOfMaps(4,1,1,number);break;
+        case 20: solverOfMaps(5,1,1,number);break;
+        case 21: solverOfMaps(3,1,2,number);break;
+        case 22: solverOfMaps(4,1,2,number);break;
+        case 23: solverOfMaps(5,1,2,number);break;
+        case 24: solverOfMaps(3,1,3,number);break;
+        case 25: solverOfMaps(4,1,3,number);break;
+        case 26: solverOfMaps(5,1,3,number);break;
+        case 27: solverOfMaps(3,1,4,number);break;
+        case 28: solverOfMaps(4,1,4,number);break;
+        case 29: solverOfMaps(5,1,4,number);break;
+        case 31: solverOfMaps(3,1,5,number);break;
+        case 32: solverOfMaps(4,1,5,number);break;
+        case 33: solverOfMaps(5,1,5,number);break;
         default: break;
     }
 
