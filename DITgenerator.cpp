@@ -43,13 +43,21 @@ string returnBase(int a){
     return b;
 }
 
+stringstream reverseOutStream("");
+
 string reverse(string a){
-    string b;
-    stringstream outStream;
+    string b = "";
+    // stringstream outStream = reverseOutStream;
+    reverseOutStream.str("");
     for(int i = 0; i < a.length();i++){
-        outStream << a[a.length()-i-1];
+        reverseOutStream << a.substr(a.length()-i-1,1);
+        // outStream << a[a.length()-i-1];
     }
-    b = outStream.str();
+    try{
+        b = reverseOutStream.str();
+    }catch(...){
+        cout << "Exception!!! : Error in function reverse, when trying to convert stringstream to string...." << endl;
+    }
     return b;
 }
 
@@ -74,17 +82,22 @@ char digit(int a){
     }
 }
 
+
+stringstream convOutStream;
+
 string convertNum(int a,int b){
     string outputS = "";
-    stringstream outStream;
+    string retVal = ""; 
+    convOutStream.str("");
     int rest,result=a;
     while(result!=0){
         rest = result % b;
         result = result / b;
-        outStream << digit(rest);
+        convOutStream << digit(rest);
     }
-    outputS = outStream.str();
-    return reverse(outputS);
+    outputS = convOutStream.str();
+    retVal = reverse(outputS); 
+    return retVal;
 }
 
 void decToBase(int number,int base){
@@ -130,7 +143,7 @@ void subtraction(int number,int base){
     for(int i = 0; i < number ;i++){
         randNum_1 = rand() % highLimit(base) + 30;
         randNum_2 = rand() % highLimit(base) + 30;
-        cout << "* " << convertNum(max(randNum_1,randNum_2),base) << "(" << base << ") - " << convertNum(min(randNum_1,randNum_2),base) << "(" << base << ") = " << convertNum(abs(randNum_1-randNum_2),base) << " -> [ " << max(randNum_1,randNum_2) << " - " << min(randNum_1,randNum_2) <<  " = " << abs(randNum_1-randNum_2) <<" ]" << endl;
+        cout << "* " << convertNum(fmax(randNum_1,randNum_2),base) << "(" << base << ") - " << convertNum(fmin(randNum_1,randNum_2),base) << "(" << base << ") = " << convertNum(abs(randNum_1-randNum_2),base) << " -> [ " << max(randNum_1,randNum_2) << " - " << min(randNum_1,randNum_2) <<  " = " << abs(randNum_1-randNum_2) <<" ]" << endl;
 
     }
 }
@@ -148,26 +161,27 @@ void multiplication(int number,int base){
     }
 }
 
+stringstream streamFillZeros;
+
 string fillInZeros(string a,int numVar){
-    stringstream streamS;
+    streamFillZeros.str("");
     if((a.length() == 4 && numVar==5) || (a.length() == 3 && numVar==4) || (a.length() == 2 && numVar==3)){
-        streamS << "0" << a;
+        streamFillZeros << "0" << a;
     }else if((a.length() == 3 && numVar==5) || (a.length() == 2 && numVar==4) || (a.length() == 1 && numVar==3)){
-        streamS << "00" << a;
+        streamFillZeros << "00" << a;
     }else if((a.length() == 2 && numVar==5) || (a.length() == 1 && numVar==4)){
-        streamS << "000" << a;
+        streamFillZeros << "000" << a;
     }else if((a.length() == 1 && numVar==5)){
-        streamS << "0000" << a;
+        streamFillZeros << "0000" << a;
         
     }else{
-        streamS << a;
+        streamFillZeros << a;
     }
-    a = streamS.str();
+    a = streamFillZeros.str();
     return a;
 }
 
 string oneImplicant(int a,int numVar){
-    stringstream stream;
     string k = "0";
     if(a>0){
         k = convertNum(a,2);
@@ -176,41 +190,55 @@ string oneImplicant(int a,int numVar){
     return numericImplicant;
 }
 
+
+stringstream streamCrImpl;
+
 string createImplicants(int mapa[],int numVar,int form){
     int k = pow (2, numVar);
     int l = 0,m = 0;
-    stringstream stream;
+    streamCrImpl.str("");
     for(int i = 0;i < k;i++){
-        l = mapa[i];
+        try{
+            l = mapa[i];
+        }catch(...){
+            cout << "Error reading from memory in createImplicants " << endl;
+        }
         if (l == form){
             if(m == 1){
-                stream << "+";
+                streamCrImpl << "+";
             }
-            stream << oneImplicant(i,numVar);
+            streamCrImpl << oneImplicant(i,numVar);
             m = 1;
         }
     }
 
-    return stream.str();
+    return streamCrImpl.str();
 }
+
+
+stringstream streamImpInde;
 
 string implicantIndex(int mapa[],int numVar,int form){
     int k = pow (2, numVar);
     int l = 0,m = 0;
-    stringstream stream;
+    streamImpInde.str("");
     for(int i = 0;i < k;i++){
-        l = mapa[i];
+        try{
+            l = mapa[i];
+        }catch(...){
+            cout << "Error reading from memory in createImplicants " << endl;
+        }
         if (l == form){
             if(m == 1){
-                stream << "+";
+                streamImpInde << "+";
             }
 
-            stream << i;
+            streamImpInde << i;
             m = 1;
         }
     }
 
-    return stream.str();
+    return streamImpInde.str();
 }
 
 string disp(int a,int form){
@@ -291,8 +319,10 @@ void printOnlyDef(string file){
     }
 }
 
+stringstream mapaStream("");
+
 string funcToString(int numVar,int mapa[],int form){
-    stringstream mapaStream;
+    mapaStream.str("");
     string temp;
     int mapLength;
     if(numVar==5){
@@ -410,6 +440,7 @@ int* generateMap(int numVar,int mapa[], int method){
             }
             catch(...){
                 cout << "Error in function generateMap, Method 1, conversion from string to int..." << endl;
+                return mapa;
             }
             // cout << imp <<  " " << implicants.substr(i*(numOfDigits),numOfDigits) << endl;
             if(mapa[imp]==0){
@@ -438,8 +469,12 @@ int countImplicants(string implicants){
     string temp = implicants;
     while( temp.find("+")!=-1){
         a = temp.find("+");
-        temp = temp.substr(a+1,temp.length()-a+1);
-        k++;
+        if(a=-1){
+            break;
+        }else{
+            temp = temp.substr(a+1,temp.length()-a+1);
+            k++;
+        }
     }   
     return k;
 }
@@ -472,6 +507,8 @@ string combineImplicants(string a,string b){
     return streamS.str();
 }
 
+stringstream output_impl,output_index;
+
 string eradicateDuplicates(string index,string implicants,int numOfImplicants,int numVar){
     string result_index,remains_index,result_index_i,remains_index_i;
     string result_impl,remains_impl,result_impl_i,remains_impl_i;;
@@ -480,7 +517,8 @@ string eradicateDuplicates(string index,string implicants,int numOfImplicants,in
     int * implicantsInt = new int[numOfImplicants];
     
     int c,d,e;
-    stringstream output_impl,output_index;
+    output_impl.str("");
+    output_index.str("");
     int found=0,conformity;
     for(int i = 0;i < numOfImplicants;i++){
         implicantsInt[i] = 333;
@@ -491,24 +529,23 @@ string eradicateDuplicates(string index,string implicants,int numOfImplicants,in
     for(int j = 0; j < numOfImplicants;j++){
         if(j==0){
             d = implicants.find("+");
-            result_impl = implicants.substr(0,d);
-            remains_impl = implicants.substr(d+1,implicants.length()-1);
             e = index.find("+");
             result_index = index.substr(0,e);
             remains_index = index.substr(e+1,index.length()-1);
+            result_impl = implicants.substr(0,d);
+            remains_impl = implicants.substr(d+1,implicants.length()-1);
             //cout << remains_index <<endl;
-            
         }else if( j == numOfImplicants-1){
             result_impl=remains_impl;
             result_index = remains_index;
             //cout << remains_index << endl;
         }else{
             d = remains_impl.find("+");
-            result_impl = remains_impl.substr(0,d);
-            remains_impl = remains_impl.substr(d+1,implicants.length()-1);
             e = remains_index.find("+");
             result_index = remains_index.substr(0,e);
             remains_index = remains_index.substr(e+1,index.length()-1);
+            result_impl = remains_impl.substr(0,d);
+            remains_impl = remains_impl.substr(d+1,implicants.length()-1);
             //cout << remains_index <<endl;
         }
         try{
@@ -554,14 +591,24 @@ string combineIndexes(string a, string b, string implicants, string index,int nu
     for(int i = 0; i < numOfImplicants;i++){
         if(i==0){
             c = index.find("+");
-            result = index.substr(0,c);
-            remains = index.substr(c+1,index.length()-1);
+            if(c!=-1){
+                result = index.substr(0,c);
+                remains = index.substr(c+1,index.length()-1);
+            }else{
+                result = remains;
+                break;
+            }
         }else if( i == numOfImplicants-1){
             result=remains;
         }else{
             c = remains.find("+");
-            result = remains.substr(0,c);
-            remains =remains.substr(c+1,index.length()-1);
+            if(c!=-1){
+                result = remains.substr(0,c);
+                remains =remains.substr(c+1,index.length()-1);
+            }else{
+                result = remains;
+                break;
+            }
         }
         if(i == first || (i == second && b.compare("none")!=0)){
             if(found>0){
@@ -914,6 +961,17 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
         solvedFunc = parseOutput(minimizedFunc.str(),numVar,0);  
     }
 
+
+    
+    delete[] implicantTable;
+    
+    delete[] sumOfCoverage;
+    
+    for(int i = 0; i < rows; ++i){
+        delete[] tableOfCoverage[i];
+    }
+    delete[] tableOfCoverage;
+    
     return solvedFunc;
 }
 
@@ -923,11 +981,27 @@ void solverKMap(int numVar,int form,int scenario,int repetition){
         int mapType;
         string implicants;
         string index;
-        mapa = new int [8];
         if (numVar == 5){
-        mapa = new int [32];
+            try{
+                mapa = new int [32];
+            }catch(...){
+                cout << "Error allocating memory. Length of map is 32. " << endl;
+                return;
+            }
         }else if(numVar == 4){
-        mapa = new int [16];
+            try{
+                mapa = new int [16];
+            }catch(...){
+                cout << "Error allocating memory. Length of map is 16. " << endl;
+                return;
+            }
+        }else{
+            try{
+                mapa = new int [8];
+            }catch(...){
+                cout << "Error allocating memory. Length of map is 8." << endl;
+                return;
+            }
         }
 
         if( scenario == 5){
@@ -938,40 +1012,50 @@ void solverKMap(int numVar,int form,int scenario,int repetition){
         }
 
         for(int i = 0; i < pow (2, numVar); i++){
-            mapa[i] = 0;
+            try{
+                mapa[i] = 0;
+            }catch(...){
+                cout << "Error writing zeros to map in the memory..." << endl;
+            }
         }
-
-        mapa = generateMap(numVar,mapa,mapType);
+        // cout << "GENMAP0" << endl;
+        mapa = generateMap(numVar,mapa,mapType);        
+        // cout << "GENMAP1" << endl;
         // for(int i = 0; i < pow (2, numVar); i++){
         //     cout << mapa[i];
         // }
         int countOfOnes = 0,notMinimizing = 0;
+        // cout << "Countin0";
         for(int i = 0; i < pow (2, numVar); i++){
             if(mapa[i]==1){
                 countOfOnes = countOfOnes + 1;
             }
         }
+        // cout << "Countin1" <<endl;
+        
         // cout << countOfOnes << " from " << pow(2,numVar) << endl;
         if(countOfOnes == pow(2,numVar)){
             notMinimizing = 1;
         }
         // cout << notMinimizing << endl;
-
         implicants = createImplicants(mapa,numVar,1);
         index = implicantIndex(mapa,numVar,1);
         string outputFuncDis;
         if(notMinimizing == 0){
+            // cout << "quine0";
             outputFuncDis = QuineMcCluskey(implicants,index,numVar,1);
+            // cout << "quine1" << endl;
         }else{
             outputFuncDis = "1";
         }
-
         implicants = createImplicants(mapa,numVar,0);
         index = implicantIndex(mapa,numVar,0);
         //string outputFuncConj = QuineMcCluskey(implicants,index,numVar,1); 
         string outputFuncCon;
         if(notMinimizing == 0){
-            outputFuncCon = QuineMcCluskey(implicants,index,numVar,0);
+            // cout << "quine0";
+            outputFuncCon = QuineMcCluskey(implicants,index,numVar,1);
+            // cout << "quine1" << endl;
         }else{
             outputFuncCon = "1";
         }
@@ -1006,6 +1090,8 @@ void solverKMap(int numVar,int form,int scenario,int repetition){
                 cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl;   
                 break;
         }
+    delete[] mapa;
+
 }
 
 void solverOfMaps(int numVar,int form,int scenario,int repetition){
