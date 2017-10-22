@@ -467,11 +467,15 @@ int countImplicants(string implicants){
     int a = 0;
     int k = 1;
     string temp = implicants;
+    // cout << temp << endl;
+    // cout << "Found +: " << temp.find("+") << endl; 
     while( temp.find("+")!=-1){
+        // cout << k <<endl;
         a = temp.find("+");
-        if(a=-1){
+        if(a==-1){
             break;
         }else{
+            // cout << temp << "----->";
             temp = temp.substr(a+1,temp.length()-a+1);
             k++;
         }
@@ -483,8 +487,11 @@ int compareImplicants(string a,string b){
     int countOfConform = 0;
     int answer = 0;
     int limitOfComformity = a.length()-1;
+    char c,d;
     for (int i=0; i < a.length();i++){
-        if(( a.substr(i,1).compare(b.substr(i,1)) == 0)){
+        c = a[i];
+        d = b[i];
+        if(( c== d)){
             countOfConform ++;
         }
     }
@@ -494,8 +501,9 @@ int compareImplicants(string a,string b){
     return answer;
 }
 
+stringstream streamS;
 string combineImplicants(string a,string b){
-    stringstream streamS;
+    streamS.str("");
     for (int i=0; i < a.length();i++){
         //cout << a.substr(i,1) <<  " + " << b.substr(i,1) << (a.substr(i,1).compare(b.substr(i,1))) << endl;
         if(( a.substr(i,1).compare(b.substr(i,1)) == 0) && (a.substr(i,1).compare("2") != 0)){
@@ -578,11 +586,11 @@ string eradicateDuplicates(string index,string implicants,int numOfImplicants,in
 }
 
 
+stringstream outputIndexes;
 string combineIndexes(string a, string b, string implicants, string index,int numOfImplicants,int numVar){
-    
+    outputIndexes.str("");
     string result,temp,remains;
     int c,d;
-    stringstream output;
     int first = implicants.find(a)/(numVar+1);
     int second = 0,found=0;
     if(b.compare("none")!=0){
@@ -591,43 +599,40 @@ string combineIndexes(string a, string b, string implicants, string index,int nu
     for(int i = 0; i < numOfImplicants;i++){
         if(i==0){
             c = index.find("+");
-            if(c!=-1){
-                result = index.substr(0,c);
-                remains = index.substr(c+1,index.length()-1);
-            }else{
-                result = remains;
-                break;
-            }
+            // if(c!=-1){
+            result = index.substr(0,c);
+            remains = index.substr(c+1,index.length()-1);
+            // }else{
+            //result = remains;
+            // }
         }else if( i == numOfImplicants-1){
             result=remains;
         }else{
             c = remains.find("+");
-            if(c!=-1){
-                result = remains.substr(0,c);
-                remains =remains.substr(c+1,index.length()-1);
-            }else{
-                result = remains;
-                break;
-            }
+            // if(c!=-1){
+            result = remains.substr(0,c);
+            remains =remains.substr(c+1,index.length()-1);
+            // }else{
+            //result = remains;
+            // }
         }
         if(i == first || (i == second && b.compare("none")!=0)){
             if(found>0){
-                output << ",";
+                outputIndexes << ",";
             }
-            output << result;
+            outputIndexes << result;
             found++;
         }
         
     }
 
 
-    return output.str();
+    return outputIndexes.str();
 }
 
 int * findPoints(int numOfImplicants,int table[],string index){
     string result,remains;
     int c,d;
-    stringstream output;
     for(int i = 0; i < numOfImplicants;i++){
         if(i==0){
             c = index.find("+");
@@ -655,7 +660,6 @@ int findCoverage(int a,int b,string index,int table[],int numOfImplicants){
     string result,remains,temp;
     int count = 0;
      int c,d,e;
-     stringstream output;
      for(int i = 0; i < numOfImplicants;i++){
          if(i==0){
              c = index.find("+");
@@ -707,8 +711,9 @@ int sumOfSums(int table[],int length){
     return sum;
 }
 
+stringstream outputPaVaCon;
 string parseVarStringCon(string a){
-    stringstream output;
+    outputPaVaCon.str("");
     int value;
     string temp,symbol,retVal;
     temp = reverse(a);
@@ -723,17 +728,18 @@ string parseVarStringCon(string a){
             default: symbol = "x";break;
         }
         if(value == 0){
-            output << symbol << "+";
+            outputPaVaCon << symbol << "+";
         }else if(value == 1){
-            output<< "non(" << symbol << ")"<< "+";
+            outputPaVaCon<< "non(" << symbol << ")"<< "+";
         }
     }
-    retVal = output.str();
+    retVal = outputPaVaCon.str();
     return retVal.substr(0,retVal.length()-1);
 }
 
+stringstream outputPaVaDis;
 string parseVarStringDis(string a){
-    stringstream output;
+    outputPaVaDis.str("");
     int value;
     string temp,symbol;
     temp = reverse(a);
@@ -748,45 +754,48 @@ string parseVarStringDis(string a){
             default: symbol = "x";break;
         }
         if(value == 1){
-            output << symbol;
+            outputPaVaDis << symbol;
         }else if(value == 0){
-            output<< "non(" << symbol << ")";
+            outputPaVaDis<< "non(" << symbol << ")";
         }
     }
-    return output.str();
+    return outputPaVaDis.str();
 }
 
+stringstream outputP;
 string parseOutput(string func,int numVar,int form){
     int lengthOfFunc = func.length()/(numVar+1);
     string temp = func.substr(0,func.length()-1);
-    stringstream output;
+    outputP.str("");
     
     if(form == 1){
         for(int i = 0;i<lengthOfFunc;i++){
-            output << parseVarStringDis(temp.substr(i*(numVar+1),numVar));
+            outputP << parseVarStringDis(temp.substr(i*(numVar+1),numVar));
             if(i<lengthOfFunc-1){
-                output << " + ";
+                outputP << " + ";
             }
         }   
     }else{
         for(int i = 0;i<lengthOfFunc;i++){
-            output << parseVarStringCon(temp.substr(i*(numVar+1),numVar));
+            outputP << parseVarStringCon(temp.substr(i*(numVar+1),numVar));
             if(i<lengthOfFunc-1){
-                output << " * ";
+                outputP << " * ";
             }
         }   
-    }
-
-    return output.str();
+    } 
+    return outputP.str();
 }
+stringstream newImplicants,newIndexes;
+stringstream minimizedFunc;
 
 string QuineMcCluskey(string implicants,string index,int numVar,int form){
     
     int k=0,l=0,m=0,n=0,lastCountOfImplicants=0;
     int comparation=0;
     int found = 0;
-    stringstream newImplicants;
-    stringstream newIndexes;
+    newImplicants.str("");
+    minimizedFunc.str("");
+    newIndexes.str("");
     string eredication;
     string a,b;
     int basicNumberOfImplicants = countImplicants(implicants);
@@ -802,7 +811,7 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
         // cout << "Indexy: " << index << endl;
         l = countImplicants(implicants);
         m = 0;
-
+        // cout << "Number of Implicants: " << l << endl;
         for(int i = 0; i < l;i++){
             found = 0;
             a = implicants.substr(i*(numVar+1),numVar);
@@ -832,9 +841,11 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
                 newImplicants << a;
                 newIndexes << combineIndexes(a,"none",implicants,index,l,numVar);
             }
+            // cout << newImplicants.str() << endl;
+            // cout << newIndexes.str() << endl;
         }
-        //cout << newImplicants.str() << endl;
-        //cout << newIndexes.str() << endl;
+        // cout << newImplicants.str() << endl;
+        // cout << newIndexes.str() << endl;
         eredication = eradicateDuplicates(newIndexes.str(),newImplicants.str(),countImplicants(newImplicants.str()),numVar);
         n=eredication.find(";");
         // cout << "END Implicants: " << eredication.substr(0,n-1) << "\r\nEND Indexes: "<< eredication.substr(n+1,eredication.length()-n-2) << endl;
@@ -852,7 +863,6 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
         }
     }
 
-    stringstream minimizedFunc;
 
     int rows = lastCountOfImplicants;
     int columns = basicNumberOfImplicants;
@@ -1054,7 +1064,7 @@ void solverKMap(int numVar,int form,int scenario,int repetition){
         string outputFuncCon;
         if(notMinimizing == 0){
             // cout << "quine0";
-            outputFuncCon = QuineMcCluskey(implicants,index,numVar,1);
+            outputFuncCon = QuineMcCluskey(implicants,index,numVar,0);
             // cout << "quine1" << endl;
         }else{
             outputFuncCon = "1";
