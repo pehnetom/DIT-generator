@@ -896,23 +896,23 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
 
     do{
         k++;
-        cout <<"ROUND: " << k  <<endl;
-        cout << endl;
+        // cout <<"ROUND: " << k  <<endl;
+        // cout << endl;
 
-        for( int i = 0;i < rows;i++){
-            cout << implicants.substr(i*(numVar+1),numVar);
-            for (int j = 0 ; j < columns;j++){
-                cout << "| " << tableOfCoverage[i][j] << " | ";
-            }
-            cout << endl;
-        }
+        // for( int i = 0;i < rows;i++){
+        //     cout << implicants.substr(i*(numVar+1),numVar);
+        //     for (int j = 0 ; j < columns;j++){
+        //         cout << "| " << tableOfCoverage[i][j] << " | ";
+        //     }
+        //     cout << endl;
+        // }
 
-        cout << endl;
-        cout << "SUM";
-        for (int j = 0 ; j < columns;j++){
-            cout << "| " << sumOfCoverage[j] << " | ";
-        }
-        cout << endl;cout <<endl;
+        // cout << endl;
+        // cout << "SUM";
+        // for (int j = 0 ; j < columns;j++){
+        //     cout << "| " << sumOfCoverage[j] << " | ";
+        // }
+        // cout << endl;cout <<endl;
 
         minimum = 0;
         for(int i = 0; i < columns;i++){
@@ -923,7 +923,7 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
              } 
         }
 
-        cout << minimum << endl;
+        // cout << minimum << endl;
         int maxCoverage = 0, curCoverage=0;
         for ( int i = 0; i <columns; i++){
             if(sumOfCoverage[i]==minimum && minimum != 1){
