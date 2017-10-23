@@ -6,7 +6,7 @@ touch priklady.md
 
 printf "# 1) PRIKLADY \r\n" >> priklady.md
 printf "Spocitane priklady na K-Mapy. \r\n\r\n" >> priklady.md
-a=30
+a=5
 b=2
 for (( i = 18;i <= 29;i++)); do
   case "$i" in
