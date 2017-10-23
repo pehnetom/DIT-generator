@@ -802,7 +802,7 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
     int * implicantTable = new int [basicNumberOfImplicants];
     // cout << index << " "  << implicants << endl;
     implicantTable = findPoints(basicNumberOfImplicants,implicantTable,index);
-    while(k<100){
+    while(1){
         newImplicants.str("");
         newIndexes.str("");
         k++;
@@ -896,47 +896,63 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
 
     do{
         k++;
-        // cout <<"ROUND: " << k  <<endl;
-        // cout << endl;
+        cout <<"ROUND: " << k  <<endl;
+        cout << endl;
 
-        // for( int i = 0;i < rows;i++){
-        //     cout << implicants.substr(i*(numVar+1),numVar);
-        //     for (int j = 0 ; j < columns;j++){
-        //         cout << "| " << tableOfCoverage[i][j] << " | ";
-        //     }
-        //     cout << endl;
-        // }
+        for( int i = 0;i < rows;i++){
+            cout << implicants.substr(i*(numVar+1),numVar);
+            for (int j = 0 ; j < columns;j++){
+                cout << "| " << tableOfCoverage[i][j] << " | ";
+            }
+            cout << endl;
+        }
 
-        // cout << endl;
-        // cout << "SUM";
-        // for (int j = 0 ; j < columns;j++){
-        //     cout << "| " << sumOfCoverage[j] << " | ";
-        // }
-        // cout << endl;cout <<endl;
+        cout << endl;
+        cout << "SUM";
+        for (int j = 0 ; j < columns;j++){
+            cout << "| " << sumOfCoverage[j] << " | ";
+        }
+        cout << endl;cout <<endl;
 
         minimum = 0;
         for(int i = 0; i < columns;i++){
              if( minimum == 0 && sumOfCoverage[i] > 0){
                 minimum = sumOfCoverage[i]; 
-             }
-             if(sumOfCoverage[i]<minimum && sumOfCoverage[i] > 0){
+             }else if(sumOfCoverage[i]<minimum && sumOfCoverage[i] > 0){
                  minimum = sumOfCoverage[i];
              } 
         }
 
+        cout << minimum << endl;
+        int maxCoverage = 0, curCoverage=0;
         for ( int i = 0; i <columns; i++){
-            if(sumOfCoverage[i]==minimum){
+            if(sumOfCoverage[i]==minimum && minimum != 1){
                 for(int j = 0; j <rows ; j++){
                     if(tableOfCoverage[j][i] == 1) {
                         delColumn = i;
                         delRow = j;
+                        break;
                     }
                 }
                 break;
+            }else if(sumOfCoverage[i]==minimum){
+                for(int j = 0; j < rows; j++){
+                    curCoverage=0;
+                    for(int h = 0; h <columns; h++){
+                        if(tableOfCoverage[j][i] == 1){
+                            curCoverage++;
+                        }
+                    }
+                    if(maxCoverage < curCoverage){
+                        maxCoverage = curCoverage;
+                        delColumn = i;
+                        delRow = j;
+                    }
+                }
             }
         }
 
-        //cout << "Deleting on row:" << delRow << ", Implicant on the column:" << delColumn <<endl;
+        cout << "Deleting on row:" << delRow << ", Implicant on the column:" << delColumn <<endl;
         minimizedFunc << implicants.substr(delRow*(numVar+1),numVar) << "+";
 
         for( int i = 0; i <columns; i++){
@@ -948,7 +964,7 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
             }
         }
 
-        // cout << " Current fc: " << minimizedFunc.str() << endl;
+        cout << " Current fc: " << minimizedFunc.str() << endl;
         for(int i = 0; i < columns;i++){
             sumOfCoverage[i] =0; 
         }
@@ -960,8 +976,8 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
             }
         }
         sums= sumOfSums(sumOfCoverage,columns);
-        // cout << sums <<endl;
-        // cout <<endl;
+        cout << sums <<endl;
+        cout <<endl;
     }while(sums != 0);
     // cout << minimizedFunc.str() << endl;
     string solvedFunc;
@@ -986,28 +1002,34 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
 }
 
 void solverKMap(int numVar,int form,int scenario,int repetition){
-    
+        //f=0,1,4,5,6,7,10,11,14,15,16,17,18,19,22,23,24,25,26,27
         int * mapa;
+        mapa = new int [32];
+        numVar = 5;
+        const int mapa_test[] = {1,1,0,0,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0};
+        for ( int i = 0; i < 32; i++){
+            mapa[i] = mapa_test[i];
+        }
         int mapType;
         string implicants;
         string index;
         if (numVar == 5){
             try{
-                mapa = new int [32];
+                // mapa = new int [32];
             }catch(...){
                 cout << "Error allocating memory. Length of map is 32. " << endl;
                 return;
             }
         }else if(numVar == 4){
             try{
-                mapa = new int [16];
+                // mapa = new int [16];
             }catch(...){
                 cout << "Error allocating memory. Length of map is 16. " << endl;
                 return;
             }
         }else{
             try{
-                mapa = new int [8];
+                // mapa = new int [8];
             }catch(...){
                 cout << "Error allocating memory. Length of map is 8." << endl;
                 return;
@@ -1023,13 +1045,13 @@ void solverKMap(int numVar,int form,int scenario,int repetition){
 
         for(int i = 0; i < pow (2, numVar); i++){
             try{
-                mapa[i] = 0;
+                // mapa[i] = 0;
             }catch(...){
                 cout << "Error writing zeros to map in the memory..." << endl;
             }
         }
         // cout << "GENMAP0" << endl;
-        mapa = generateMap(numVar,mapa,mapType);        
+        // mapa = generateMap(numVar,mapa,mapType);        
         // cout << "GENMAP1" << endl;
         // for(int i = 0; i < pow (2, numVar); i++){
         //     cout << mapa[i];
