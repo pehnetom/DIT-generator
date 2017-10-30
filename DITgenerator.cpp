@@ -403,6 +403,7 @@ string generateImplicants(int numVar){
 }
 
 const int numOfDigits = 2;
+const int testMapa1[]={1,1,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0};
 
 int* generateMap(int numVar,int mapa[], int method){
   int maxNumOfImp = 0,numOfImp,maxVar,k=0,imp;
@@ -420,36 +421,40 @@ int* generateMap(int numVar,int mapa[], int method){
   }
   numOfImp = rand() % (maxNumOfImp-3) + 3;
   
-  if( method == 1){
-    if (numVar == 5){
-        maxNumOfImp = 10;
-    }else if(numVar == 4){
-        maxNumOfImp = 5;
-    }else{
-        maxNumOfImp = 2; 
-    }
-    while(k<numOfImp){
-        implicants = generateImplicants(numVar);
-        // cout << implicants << endl;
-        for(int i=0;i < (implicants.length()/2);i++){
-            // cout << i << " " << i*(numOfDigits) << " " << implicants.length() << " " << implicants.substr(i*(numOfDigits),numOfDigits) << endl;
-            try{
-                imp = stoi(implicants.substr(i*(numOfDigits),numOfDigits));
-                // cout << imp <<endl;;
-                // imp = 1;
-            }
-            catch(...){
-                cout << "Error in function generateMap, Method 1, conversion from string to int..." << endl;
-                return mapa;
-            }
-            // cout << imp <<  " " << implicants.substr(i*(numOfDigits),numOfDigits) << endl;
-            if(mapa[imp]==0){
-                mapa[imp] = 1;
-                
-            }
+    if( method == 2 ){
+        for (int i = 0; i < maxVar;i++){
+            mapa[i] = testMapa1[i];
         }
-        k++;
-    }
+    }else  if( method == 1){
+        if (numVar == 5){
+            maxNumOfImp = 10;
+        }else if(numVar == 4){
+            maxNumOfImp = 5;
+        }else{
+            maxNumOfImp = 2; 
+        }
+        while(k<numOfImp){
+            implicants = generateImplicants(numVar);
+            // cout << implicants << endl;
+            for(int i=0;i < (implicants.length()/2);i++){
+                // cout << i << " " << i*(numOfDigits) << " " << implicants.length() << " " << implicants.substr(i*(numOfDigits),numOfDigits) << endl;
+                try{
+                    imp = stoi(implicants.substr(i*(numOfDigits),numOfDigits));
+                    // cout << imp <<endl;;
+                    // imp = 1;
+                }
+                catch(...){
+                    cout << "Error in function generateMap, Method 1, conversion from string to int..." << endl;
+                    return mapa;
+                }
+                // cout << imp <<  " " << implicants.substr(i*(numOfDigits),numOfDigits) << endl;
+                if(mapa[imp]==0){
+                    mapa[imp] = 1;
+                    
+                }
+            }
+            k++;
+        }
   }
   else  {
     while(k<numOfImp){
@@ -770,14 +775,18 @@ string parseOutput(string func,int numVar,int form){
     
     if(form == 1){
         for(int i = 0;i<lengthOfFunc;i++){
+            outputP << "(";
             outputP << parseVarStringDis(temp.substr(i*(numVar+1),numVar));
+            outputP << ")";
             if(i<lengthOfFunc-1){
                 outputP << " + ";
             }
         }   
     }else{
         for(int i = 0;i<lengthOfFunc;i++){
+            outputP << "(";
             outputP << parseVarStringCon(temp.substr(i*(numVar+1),numVar));
+            outputP << ")";
             if(i<lengthOfFunc-1){
                 outputP << " * ";
             }
@@ -926,7 +935,7 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
         // cout << minimum << endl;
         int maxCoverage = 0, curCoverage=0;
         for ( int i = 0; i <columns; i++){
-            if(sumOfCoverage[i]==minimum && minimum != 1){
+            if(sumOfCoverage[i]==minimum && minimum == 1){
                 for(int j = 0; j <rows ; j++){
                     if(tableOfCoverage[j][i] == 1) {
                         delColumn = i;
@@ -935,14 +944,15 @@ string QuineMcCluskey(string implicants,string index,int numVar,int form){
                     }
                 }
                 break;
-            }else if(sumOfCoverage[i]==minimum){
+            }else if(sumOfCoverage[i]==minimum && minimum != 1){
                 for(int j = 0; j < rows; j++){
                     curCoverage=0;
                     for(int h = 0; h <columns; h++){
-                        if(tableOfCoverage[j][i] == 1){
+                        if(tableOfCoverage[j][h] == 1){
                             curCoverage++;
                         }
                     }
+                    // cout << "Pokryti pro: " << j << " se stupnem: " << curCoverage << endl;
                     if(maxCoverage < curCoverage){
                         maxCoverage = curCoverage;
                         delColumn = i;
@@ -1036,7 +1046,10 @@ void solverKMap(int numVar,int form,int scenario,int repetition){
             }
         }
 
-        if( scenario == 5){
+        if( scenario == 7){
+            scenario = 1;
+            mapType = 2;
+        }else if( scenario == 5){
             scenario = 1;
             mapType = 1;
         }else{
@@ -1071,6 +1084,9 @@ void solverKMap(int numVar,int form,int scenario,int repetition){
         }
         // cout << notMinimizing << endl;
         implicants = createImplicants(mapa,numVar,1);
+        string impFunc = implicants;
+        impFunc.append("+");
+        string inputFunction = parseOutput(impFunc,numVar,1);
         index = implicantIndex(mapa,numVar,1);
         string outputFuncDis;
         if(notMinimizing == 0){
@@ -1082,7 +1098,7 @@ void solverKMap(int numVar,int form,int scenario,int repetition){
         }
         implicants = createImplicants(mapa,numVar,0);
         index = implicantIndex(mapa,numVar,0);
-        //string outputFuncConj = QuineMcCluskey(implicants,index,numVar,1); 
+        // string outputFuncConj = QuineMcCluskey(implicants,index,numVar,1); 
         string outputFuncCon;
         if(notMinimizing == 0){
             // cout << "quine0";
@@ -1111,6 +1127,16 @@ void solverKMap(int numVar,int form,int scenario,int repetition){
                 // cout << funcToString(numVar,mapa,form) << endl;
                 cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl; 
                 cout << "\r\n" << "```" << "\r\n" << endl;
+                cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
+                break;
+            case 6:
+                cout << "\r\n" << "```" << endl;
+                // cout << "Function is: " << funcToString(numVar,mapa,form) << "\r\n" << endl;
+                // cout << "Function is: " <<  impFunc << "\r\n" << endl;
+                cout << "Function is: " <<  inputFunction << "\r\n" << endl;
+                printKMap(numVar,mapa,form);
+                cout << "\r\n" << "```" << "\r\n" << endl;
+                cout << "Conjunction form of function is: f = " << outputFuncCon << "\r\n\r\n" << endl; 
                 cout << "Disjunction form of function is: f = " << outputFuncDis << "\r\n\r\n" << endl;
                 break;
             default:
@@ -1186,6 +1212,10 @@ int main(int argc, char* argv[]) {
         case 31: solverOfMaps(3,1,5,number);break;
         case 32: solverOfMaps(4,1,5,number);break;
         case 33: solverOfMaps(5,1,5,number);break;
+        case 34: solverOfMaps(3,1,6,number);break;
+        case 35: solverOfMaps(4,1,6,number);break;
+        case 36: solverOfMaps(5,1,6,number);break;
+        case 37: solverOfMaps(5,1,7,number);break;
         default: break;
     }
 
