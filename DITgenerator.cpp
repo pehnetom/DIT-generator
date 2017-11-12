@@ -43,23 +43,39 @@ string returnBase(int a){
     return b;
 }
 
-stringstream reverseOutStream("");
 
 string reverse(string a){
-    string b = "";
-    // stringstream outStream = reverseOutStream;
-    reverseOutStream.str("");
-    for(int i = 0; i < a.length();i++){
-        reverseOutStream << a.substr(a.length()-i-1,1);
-        // outStream << a[a.length()-i-1];
+    string prvni;
+    string druhy;
+    
+    prvni = a.substr(0,1);
+    druhy = a.substr(1,a.length()-1);
+
+    if ((druhy.length()) == 0){
+        return prvni;
     }
-    try{
-        b = reverseOutStream.str();
-    }catch(...){
-        cout << "Exception!!! : Error in function reverse, when trying to convert stringstream to string...." << endl;
-    }
-    return b;
+    
+    string treti = reverse(druhy);
+    return treti.append(prvni);
 }
+
+// stringstream reverseOutStream("");
+
+// string reverse(string a){
+//     string b = "";
+//     // stringstream outStream = reverseOutStream;
+//     reverseOutStream.str("");
+//     for(int i = 0; i < a.length();i++){
+//         reverseOutStream << a.substr(a.length()-i-1,1);
+//         // outStream << a[a.length()-i-1];
+//     }
+//     try{
+//         b = reverseOutStream.str();
+//     }catch(...){
+//         cout << "Exception!!! : Error in function reverse, when trying to convert stringstream to string...." << endl;
+//     }
+//     return b;
+// }
 
 char digit(int a){
     switch(a){
@@ -406,7 +422,7 @@ const int numOfDigits = 2;
 const int testMapa1[]={1,1,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0};
 
 int* generateMap(int numVar,int mapa[], int method){
-  int maxNumOfImp = 0,numOfImp,maxVar,k=0,imp;
+  int maxNumOfImp = 0,numOfImp,maxVar,k=0,imp,test=0;
   string implicants;
   if (numVar == 5){
     maxNumOfImp = 20;
@@ -453,7 +469,21 @@ int* generateMap(int numVar,int mapa[], int method){
                     
                 }
             }
-            k++;
+            for(int i=0;i<maxVar;i++){
+                if(mapa[i]==1){
+                    test++;
+                }
+            }
+            // cout << test << endl;
+            if(test==maxVar){
+                k=0;
+                for(int i=0;i<maxVar;i++){
+                    mapa[i]=0;
+                }
+            }else{
+                k++;
+            }
+            test = 0;
         }
   }
   else  {
@@ -1216,6 +1246,9 @@ int main(int argc, char* argv[]) {
         case 35: solverOfMaps(4,1,6,number);break;
         case 36: solverOfMaps(5,1,6,number);break;
         case 37: solverOfMaps(5,1,7,number);break;
+        // case 38:
+        //     cout << "Ahoj jak se mas!!" << endl; 
+        //     cout << reverser("Ahoj jak se mas!!") << endl;
         default: break;
     }
 
